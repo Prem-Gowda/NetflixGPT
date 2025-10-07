@@ -71,7 +71,7 @@ const Login = () => {
       )
         .then((userCredential) => {
           const user = userCredential.user;
-          
+          navigate("/browse")
         })
         .catch((error) => {
           const errorCode = error.code;

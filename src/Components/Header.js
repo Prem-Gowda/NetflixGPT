@@ -1,5 +1,5 @@
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import React from "react";
+import React, { useEffect } from "react";
 import { auth } from "../Utils/Firebase";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector} from "react-redux";
@@ -10,6 +10,11 @@ const Header = () => {
   const navigate = useNavigate();
   const user = useSelector((store) => store.user);
 
+  console.log(user);
+
+  
+  
+ useEffect(()=>{
   const unSubscribe = onAuthStateChanged(auth, (user) => {
     if (user) {
       const { uid, email, password,displayName,photoURL} = user;
@@ -19,9 +24,12 @@ const Header = () => {
       dispatch(removeUser());
       navigate("/")
     }
-    return ()=> unSubscribe();
+   
   });
+     unSubscribe();
 
+
+ },[])
   const handleSignOut = () => {
     signOut(auth)
       .then(() => {
