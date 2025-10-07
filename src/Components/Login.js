@@ -4,12 +4,19 @@ import { validateData } from "../Utils/ValidData";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  updateProfile,
 } from "firebase/auth";
 import { auth } from "../Utils/Firebase";
+import { useDispatch } from "react-redux";
+import { addUser } from "../Utils/userSlice";
 import { useNavigate } from "react-router-dom";
 
+
 const Login = () => {
+
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [signInForm, setSignInForm] = useState(true);
   const [errorMessage, setErrorMessage] = useState(null);
 
@@ -18,10 +25,9 @@ const Login = () => {
   const name = useRef(null);
 
   const handleButtonClick = () => {
-    console.log(password.current.value);
     const message = validateData(
       email.current.value,
-      password.current.value
+      password.current.value,
       //name.current.value
     );
     setErrorMessage(message);
@@ -36,8 +42,20 @@ const Login = () => {
       )
         .then((userCredential) => {
           const user = userCredential.user;
+
+          updateProfile(user, {
+            displayName: name.current.value,
+            photoURL:
+              "https://images.icon-icons.com/2619/PNG/256/among_us_netflix_icon_156927.png",
+          })
+            .then(() => {
+              const { uid, email, password,displayName,photoURL} = auth.currentUser;
+                    dispatch(addUser({ uid: uid, email: email, password: password,displayName: displayName, photoURL:photoURL}));
+                    navigate("/browse");
+            })
+            .catch((error) => {});
           console.log(user);
-          navigate("/browse");
+          
         })
         .catch((error) => {
           const errorCode = error.code;
@@ -53,7 +71,7 @@ const Login = () => {
       )
         .then((userCredential) => {
           const user = userCredential.user;
-          navigate("/browse");
+          
         })
         .catch((error) => {
           const errorCode = error.code;
