@@ -1,22 +1,30 @@
-import React, { useEffect } from 'react'
-import Header from './Header'
-import { options } from '../Utils/Constant'
+import React from "react";
+import Header from "./Header";
+import useNowPlayingMovies from "../Hooks/useNowPlayingMovies";
+import MainContainer from "./MainContainer";
+import SecondaryContainer from "./SecondaryContainer";
+import usePopularMovies from "../Hooks/usePopularMovies";
+import GptSearch from "./GptSearch";
+import { useSelector } from "react-redux";
 
 const Browse = () => {
-const moviesPlayingNow = async ()=>{
-  const data = await fetch('https://api.themoviedb.org/3/movie/now_playing?page=1', options);
-  const json = await data.json();
-  console.log(json);
-}
-
-useEffect(()=>{
-  moviesPlayingNow()
-
-},[])
+  const gptSearch = useSelector((store) => store.gpt.showGPT);
+  useNowPlayingMovies();
+  usePopularMovies();
 
   return (
-   <Header/>
-  )
-}
+    <div>
+      <Header />
+      {gptSearch ? (
+        <GptSearch />
+      ) : (
+        <>
+          <MainContainer />
+          <SecondaryContainer />
+        </>
+      )}
+    </div>
+  );
+};
 
-export default Browse
+export default Browse;
